@@ -92,9 +92,9 @@ const ProductDetailScreen: React.FC = () => {
         showsHorizontalScrollIndicator={false}
         style={styles.thumbnailContainer}
       >
-        {product.images.map((image, index) => (
+        {Array.isArray(product.images) && product.images.map((image, index) => (
           <StyledTouchableOpacity
-            key={index}
+            key={`thumb-${index}`}
             onPress={() => setSelectedImage(image)}
             style={[
               styles.thumbnailButton,
@@ -113,13 +113,13 @@ const ProductDetailScreen: React.FC = () => {
       {/* Product Info */}
       <StyledView style={styles.infoContainer}>
         <StyledView style={styles.headerContainer}>
-          <StyledText style={styles.vendorName}>{product.vendor.name}</StyledText>
-          <StyledText style={styles.productName}>{product.names.en}</StyledText>
-          <StyledText style={styles.productSku}>SKU: {product.product_code}</StyledText>
-          <StyledText style={styles.productSeries}>Series: {product.series.name}</StyledText>
+          <StyledText style={styles.vendorName}>{product.vendor?.name || 'Unknown Vendor'}</StyledText>
+          <StyledText style={styles.productName}>{product.names?.en || 'Unnamed Product'}</StyledText>
+          <StyledText style={styles.productSku}>SKU: {product.product_code || 'Unknown'}</StyledText>
+          <StyledText style={styles.productSeries}>Series: {product.series?.name || 'N/A'}</StyledText>
           <StyledText style={styles.productPrice}>
-            ${product.price.toFixed(2)} 
-            {product.series.item_quantity > 1 && ` (Pack of ${product.series.item_quantity})`}
+            ${(product.price || 0).toFixed(2)} 
+            {(product.series?.item_quantity || 0) > 1 && ` (Pack of ${product.series.item_quantity})`}
           </StyledText>
         </StyledView>
         
@@ -127,28 +127,28 @@ const ProductDetailScreen: React.FC = () => {
         <StyledView style={styles.detailsContainer}>
           <StyledText style={styles.detailsTitle}>Product Details</StyledText>
           
-          {product.description_details.en.fabric && (
+          {product.description_details?.en?.fabric && (
             <StyledView style={styles.detailItem}>
               <StyledText style={styles.detailLabel}>Fabric</StyledText>
               <StyledText style={styles.detailValue}>{product.description_details.en.fabric}</StyledText>
             </StyledView>
           )}
           
-          {product.description_details.en.model_measurements && (
+          {product.description_details?.en?.model_measurements && (
             <StyledView style={styles.detailItem}>
               <StyledText style={styles.detailLabel}>Model Measurements</StyledText>
               <StyledText style={styles.detailValue}>{product.description_details.en.model_measurements}</StyledText>
             </StyledView>
           )}
           
-          {product.description_details.en.sample_size && (
+          {product.description_details?.en?.sample_size && (
             <StyledView style={styles.detailItem}>
               <StyledText style={styles.detailLabel}>Sample Size</StyledText>
               <StyledText style={styles.detailValue}>{product.description_details.en.sample_size}</StyledText>
             </StyledView>
           )}
           
-          {product.description_details.en.product_measurements && (
+          {product.description_details?.en?.product_measurements && (
             <StyledView style={styles.detailItem}>
               <StyledText style={styles.detailLabel}>Product Measurements</StyledText>
               <StyledText style={styles.detailValue}>{product.description_details.en.product_measurements}</StyledText>
