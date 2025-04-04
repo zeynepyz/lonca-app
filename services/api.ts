@@ -23,9 +23,14 @@ export const productApi = {
       
       // Ensure every product has valid properties required for rendering
       return response.data.map((product: any, index: number) => {
-        if (!product._id || !product._id.$oid) {
+        // Normalize _id field - handle both string and object formats
+        if (!product._id) {
           console.warn('Product missing _id, adding temporary one:', product);
           product._id = { $oid: `temp-id-${index}` };
+        } else if (typeof product._id === 'string') {
+          // Convert string _id to $oid format expected by the app
+          const stringId = product._id;
+          product._id = { $oid: stringId };
         }
         
         if (!product.images || !Array.isArray(product.images)) {
@@ -45,6 +50,17 @@ export const productApi = {
     try {
       const response = await api.get(`/products/${id}`);
       const product = response.data;
+      
+      if (!product) {
+        console.error('No product returned from API');
+        return null;
+      }
+      
+      // Normalize _id field if it's a string
+      if (typeof product._id === 'string') {
+        const stringId = product._id;
+        product._id = { $oid: stringId };
+      }
       
       // Ensure product has valid image array
       if (!product.images || !Array.isArray(product.images)) {

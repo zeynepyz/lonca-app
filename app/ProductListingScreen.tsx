@@ -41,6 +41,13 @@ const ProductListingScreen: React.FC = () => {
   }, []);
 
   const handleProductPress = (productId: string) => {
+    
+    // We now have a clean ID string from ProductCard
+    if (!productId || productId === 'unknown') {
+      console.error('Invalid product ID:', productId);
+      return;
+    }
+    
     navigation.navigate('ProductDetail', { productId });
   };
 
@@ -69,7 +76,11 @@ const ProductListingScreen: React.FC = () => {
         <StyledText style={styles.title}>Products</StyledText>
         <FlatList
           data={products}
-          keyExtractor={(item) => item._id.$oid}
+          keyExtractor={(item) => {
+            // Handle both string and object ID formats
+            if (typeof item._id === 'string') return item._id;
+            return item._id?.$oid || `item-${Math.random()}`;
+          }}
           renderItem={({ item }) => (
             <ProductCard product={item} onPress={handleProductPress} />
           )}

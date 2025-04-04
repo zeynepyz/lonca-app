@@ -33,16 +33,29 @@ const ProductDetailScreen: React.FC = () => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
+        
+        // Ensure we have a valid ID to fetch
+        if (!productId) {
+          setError('Invalid product ID');
+          setLoading(false);
+          return;
+        }
+        
         const data = await productApi.getProductById(productId);
         if (data) {
           setProduct(data);
-          setSelectedImage(data.main_image);
+          if (data.main_image) {
+            setSelectedImage(data.main_image);
+          } else if (data.images && data.images.length > 0) {
+            setSelectedImage(data.images[0]);
+          }
         } else {
+          console.error('Product not found for ID:', productId);
           setError('Product not found');
         }
       } catch (err) {
-        setError('Failed to load product details');
         console.error('Error fetching product:', err);
+        setError('Failed to load product details');
       } finally {
         setLoading(false);
       }

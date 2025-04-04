@@ -18,7 +18,31 @@ export const getProducts = async (req: Request, res: Response): Promise<void> =>
 // @access  Public
 export const getProductById = async (req: Request, res: Response): Promise<void> => {
   try {
-    const product = await Product.findById(req.params.id);
+    const productId = req.params.id;
+    
+    // Don't check for length=24 as we might have different ID formats
+    if (!productId) {
+      res.status(400).json({ message: 'Invalid product ID format' });
+      return;
+    }
+    
+    let product = await Product.findById(productId).catch(err => {
+      return null;
+    });
+    
+    // If not found and ID looks like MongoDB ID, try using findOne
+    if (!product) {
+      product = await Product.findOne({ _id: productId }).catch(err => {
+        return null;
+      });
+    }
+    
+    // If still not found, try by product_code as fallback
+    if (!product) {
+      product = await Product.findOne({ product_code: productId }).catch(err => {
+        return null;
+      });
+    }
     
     if (!product) {
       res.status(404).json({ message: 'Product not found' });
@@ -27,6 +51,7 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
     
     res.json(product);
   } catch (error: any) {
+    console.error('Error fetching product by ID:', error);
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 }; 
