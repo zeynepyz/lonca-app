@@ -1,5 +1,6 @@
 import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { ThemeType, lightTheme, darkTheme } from '../context/ThemeContext';
+import { scaledFont, scaledWidth, scaledHeight } from '../utils/scaling';
 
 // Export components directly
 export const StyledView = View;
@@ -15,11 +16,11 @@ export const getThemedStyles = (theme: ThemeType) => {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: 16,
+      padding: scaledWidth(16),
       backgroundColor: colors.background,
     },
     content: {
-      padding: 16,
+      padding: scaledWidth(16),
     },
     row: {
       flexDirection: 'row',
@@ -29,19 +30,19 @@ export const getThemedStyles = (theme: ThemeType) => {
       flexDirection: 'column',
     },
     text: {
-      fontSize: 16,
+      fontSize: scaledFont(16),
       color: colors.text,
     },
     heading: {
-      fontSize: 24,
+      fontSize: scaledFont(24),
       fontWeight: 'bold',
-      marginBottom: 16,
+      marginBottom: scaledHeight(16),
       color: colors.text,
     },
     button: {
       backgroundColor: colors.primary,
-      padding: 12,
-      borderRadius: 8,
+      padding: scaledWidth(12),
+      borderRadius: scaledWidth(8),
       alignItems: 'center',
     },
     buttonText: {
@@ -50,45 +51,45 @@ export const getThemedStyles = (theme: ThemeType) => {
     },
     card: {
       backgroundColor: colors.cardBackground,
-      borderRadius: 8,
-      padding: 16,
+      borderRadius: scaledWidth(8),
+      padding: scaledWidth(16),
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
+      shadowOffset: { width: 0, height: scaledHeight(2) },
       shadowOpacity: 0.1,
       shadowRadius: 4,
       elevation: 2,
-      marginBottom: 16,
+      marginBottom: scaledHeight(16),
     },
     infoContainer: {
-      padding: 16,
+      padding: scaledWidth(16),
     },
     image: {
       width: '100%',
     },
     vendorName: {
-      fontSize: 16,
+      fontSize: scaledFont(16),
       fontWeight: 'bold',
-      marginBottom: 4,
+      marginBottom: scaledHeight(4),
       color: colors.text,
     },
     productName: {
-      fontSize: 16,
+      fontSize: scaledFont(16),
       fontWeight: 'bold',
-      marginBottom: 4,
+      marginBottom: scaledHeight(4),
       color: colors.text,
     },
     productPrice: {
-      fontSize: 16,
+      fontSize: scaledFont(16),
       fontWeight: 'bold',
-      marginBottom: 4,
+      marginBottom: scaledHeight(4),
       color: colors.text,
     },
     themeToggleButton: {
       position: 'absolute',
-      top: 10,
-      right: 10,
-      padding: 8,
-      borderRadius: 20,
+      top: scaledHeight(10),
+      right: scaledWidth(10),
+      padding: scaledWidth(8),
+      borderRadius: scaledWidth(20),
       backgroundColor: colors.primary,
       zIndex: 10,
     },
@@ -99,7 +100,7 @@ export const getThemedStyles = (theme: ThemeType) => {
       backgroundColor: colors.background,
     },
     loadingText: {
-      marginTop: 8,
+      marginTop: scaledHeight(8),
       color: theme === 'dark' ? '#A0AEC0' : '#666',
     },
     errorContainer: {
@@ -107,38 +108,38 @@ export const getThemedStyles = (theme: ThemeType) => {
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: colors.background,
-      padding: 16,
+      padding: scaledWidth(16),
     },
     errorTitle: {
       color: colors.error,
-      fontSize: 18,
-      marginBottom: 8,
+      fontSize: scaledFont(18),
+      marginBottom: scaledHeight(8),
     },
     errorMessage: {
       textAlign: 'center',
       color: colors.text,
     },
     title: {
-      fontSize: 24,
+      fontSize: scaledFont(24),
       fontWeight: 'bold',
-      marginBottom: 16,
+      marginBottom: scaledHeight(16),
       color: colors.text,
     },
     // Product detail specific styles
     mainImage: {
       width: '100%',
-      height: 400,
+      height: scaledHeight(400),
     },
     thumbnailContainer: {
       flexDirection: 'row',
-      padding: 10,
+      padding: scaledWidth(10),
       backgroundColor: theme === 'dark' ? '#1A1A1A' : '#f9f9f9',
     },
     thumbnailButton: {
-      width: 70,
-      height: 70,
-      marginRight: 10,
-      borderRadius: 5,
+      width: scaledWidth(70),
+      height: scaledHeight(70),
+      marginRight: scaledWidth(10),
+      borderRadius: scaledWidth(5),
       borderWidth: 1,
       borderColor: theme === 'dark' ? '#333' : '#ddd',
       overflow: 'hidden',
@@ -152,39 +153,39 @@ export const getThemedStyles = (theme: ThemeType) => {
       height: '100%',
     },
     headerContainer: {
-      marginBottom: 20,
+      marginBottom: scaledHeight(20),
     },
     detailsContainer: {
-      marginTop: 20,
+      marginTop: scaledHeight(20),
       borderTopWidth: 1,
       borderTopColor: theme === 'dark' ? '#333' : '#eee',
-      paddingTop: 16,
+      paddingTop: scaledHeight(16),
     },
     detailsTitle: {
-      fontSize: 18,
+      fontSize: scaledFont(18),
       fontWeight: 'bold',
-      marginBottom: 10,
+      marginBottom: scaledHeight(10),
       color: colors.text,
     },
     detailItem: {
-      marginBottom: 10,
+      marginBottom: scaledHeight(10),
     },
     detailLabel: {
       fontWeight: 'bold',
-      marginBottom: 2,
+      marginBottom: scaledHeight(2),
       color: colors.text,
     },
     detailValue: {
-      lineHeight: 20,
+      lineHeight: scaledHeight(20),
       color: colors.text,
     },
     productSku: {
       color: theme === 'dark' ? '#A0AEC0' : '#666',
-      marginBottom: 4,
+      marginBottom: scaledHeight(4),
     },
     productSeries: {
       color: theme === 'dark' ? '#A0AEC0' : '#666',
-      marginBottom: 8,
+      marginBottom: scaledHeight(8),
     },
   });
 };
