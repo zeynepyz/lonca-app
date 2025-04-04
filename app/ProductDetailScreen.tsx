@@ -7,14 +7,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Product } from '../types/ProductTypes';
 import { RootStackParamList } from '../types/NavigationTypes';
 import { productApi } from '../services/api';
+import ThemeToggle from '../components/ThemeToggle';
 import { 
   StyledView, 
   StyledText, 
   StyledScrollView, 
   StyledImage, 
   StyledTouchableOpacity,
-  styles as commonStyles
+  getThemedStyles
 } from '../components/styles';
+import { useTheme } from '../context/ThemeContext';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 type ProductDetailNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ProductDetail'>;
@@ -28,6 +30,8 @@ const ProductDetailScreen: React.FC = () => {
   const route = useRoute<ProductDetailRouteProp>();
   const navigation = useNavigation<ProductDetailNavigationProp>();
   const { productId } = route.params;
+  const { theme, isDark } = useTheme();
+  const styles = getThemedStyles(theme);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -67,7 +71,7 @@ const ProductDetailScreen: React.FC = () => {
   if (loading) {
     return (
       <StyledView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color={isDark ? '#90CAF9' : '#0000ff'} />
         <StyledText style={styles.loadingText}>Loading product details...</StyledText>
       </StyledView>
     );
@@ -79,7 +83,7 @@ const ProductDetailScreen: React.FC = () => {
         <StyledText style={styles.errorTitle}>Oops!</StyledText>
         <StyledText style={styles.errorMessage}>{error || 'Product not found'}</StyledText>
         <StyledTouchableOpacity
-          style={styles.goBackButton}
+          style={styles.button}
           onPress={() => navigation.goBack()}
         >
           <StyledText style={styles.buttonText}>Go Back</StyledText>
@@ -89,8 +93,9 @@ const ProductDetailScreen: React.FC = () => {
   }
 
   return (
-    <StyledScrollView style={styles.container}>
-      <StatusBar style="dark" />
+    <StyledScrollView style={[styles.container, { paddingTop: 0 }]}>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      <ThemeToggle />
       
       {/* Main Image */}
       <StyledImage
@@ -172,115 +177,5 @@ const ProductDetailScreen: React.FC = () => {
     </StyledScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9f9f9',
-  },
-  loadingText: {
-    marginTop: 8,
-    color: '#666',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9f9f9',
-    padding: 16,
-  },
-  errorTitle: {
-    color: '#E53935',
-    fontSize: 18,
-    marginBottom: 8,
-  },
-  errorMessage: {
-    textAlign: 'center',
-    color: '#333',
-  },
-  goBackButton: {
-    marginTop: 16,
-    backgroundColor: '#2196F3',
-    paddingHorizontal: 24,
-    paddingVertical: 8,
-    borderRadius: 4,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '500',
-  },
-  mainImage: {
-    width: '100%',
-    height: 384,
-  },
-  thumbnailContainer: {
-    padding: 8,
-    backgroundColor: '#f9f9f9',
-  },
-  thumbnailButton: {
-    marginRight: 8,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  selectedThumbnail: {
-    borderColor: '#2196F3',
-  },
-  thumbnailImage: {
-    width: 64,
-    height: 64,
-  },
-  infoContainer: {
-    padding: 16,
-  },
-  headerContainer: {
-    marginBottom: 16,
-  },
-  vendorName: {
-    color: '#666',
-    marginBottom: 4,
-  },
-  productName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  productSku: {
-    color: '#333',
-  },
-  productSeries: {
-    color: '#333',
-  },
-  productPrice: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#0D47A1',
-    marginTop: 8,
-  },
-  detailsContainer: {
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  detailsTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
-  },
-  detailItem: {
-    marginBottom: 8,
-  },
-  detailLabel: {
-    fontWeight: '500',
-  },
-  detailValue: {
-    color: '#333',
-  },
-});
 
 export default ProductDetailScreen; 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Product } from '../types/ProductTypes';
-import { StyledTouchableOpacity, StyledImage, StyledText, StyledView, styles as commonStyles } from './styles';
+import { StyledTouchableOpacity, StyledImage, StyledText, StyledView, getThemedStyles } from './styles';
+import { useTheme } from '../context/ThemeContext';
 
 interface ProductCardProps {
   product: Product;
@@ -8,6 +9,9 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
+  const { theme } = useTheme();
+  const styles = getThemedStyles(theme);
+
   // Ensure product has valid ID - handle both string and object formats
   let productId: string;
   if (typeof product._id === 'string') {
@@ -31,18 +35,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
 
   return (
     <StyledTouchableOpacity
-      style={commonStyles.card}
+      style={styles.card}
       onPress={handlePress}
     >
       <StyledImage
         source={{ uri: imageUrl }}
-        style={commonStyles.image}
+        style={styles.image}
         resizeMode="cover"
       />
-      <StyledView style={commonStyles.infoContainer}>
-        <StyledText style={commonStyles.vendorName}>{vendorName}</StyledText>
-        <StyledText style={commonStyles.productName}>{productName}</StyledText>
-        <StyledText style={commonStyles.productPrice}>
+      <StyledView style={styles.infoContainer}>
+        <StyledText style={styles.vendorName}>{vendorName}</StyledText>
+        <StyledText style={styles.productName}>{productName}</StyledText>
+        <StyledText style={styles.productPrice}>
           ${price.toFixed(2)} {itemQuantity > 1 && `(Pack of ${itemQuantity})`}
         </StyledText>
       </StyledView>

@@ -5,10 +5,12 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import ProductCard from '../components/ProductCard';
+import ThemeToggle from '../components/ThemeToggle';
 import { productApi } from '../services/api';
 import { Product } from '../types/ProductTypes';
 import { RootStackParamList } from '../types/NavigationTypes';
-import { StyledView, StyledText, styles as commonStyles } from '../components/styles';
+import { StyledView, StyledText, getThemedStyles } from '../components/styles';
+import { useTheme } from '../context/ThemeContext';
 
 type ProductListingScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -21,7 +23,9 @@ const ProductListingScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   
   const navigation = useNavigation<ProductListingScreenNavigationProp>();
-
+  const { theme, isDark } = useTheme();
+  const styles = getThemedStyles(theme);
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -54,7 +58,7 @@ const ProductListingScreen: React.FC = () => {
   if (loading) {
     return (
       <StyledView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color={isDark ? '#90CAF9' : '#0000ff'} />
         <StyledText style={styles.loadingText}>Loading products...</StyledText>
       </StyledView>
     );
@@ -70,8 +74,9 @@ const ProductListingScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" />
+    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#121212' : '#f9f9f9' }]}>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      <ThemeToggle />
       <StyledView style={styles.content}>
         <StyledText style={styles.title}>Products</StyledText>
         <FlatList
@@ -91,46 +96,5 @@ const ProductListingScreen: React.FC = () => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
-  },
-  content: {
-    padding: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9f9f9',
-  },
-  loadingText: {
-    marginTop: 8,
-    color: '#666',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9f9f9',
-    padding: 16,
-  },
-  errorTitle: {
-    color: '#E53935',
-    fontSize: 18,
-    marginBottom: 8,
-  },
-  errorMessage: {
-    textAlign: 'center',
-    color: '#333',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-});
 
 export default ProductListingScreen; 
