@@ -44,10 +44,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
         resizeMode="cover"
       />
       <StyledView style={styles.infoContainer}>
-        <StyledText style={styles.vendorName}>{vendorName}</StyledText>
-        <StyledText style={styles.productName}>{productName}</StyledText>
+        <StyledText style={styles.productName} numberOfLines={2}>{productName}</StyledText>
+        <StyledText style={styles.vendorName} numberOfLines={1}>{vendorName}</StyledText>
         <StyledText style={styles.productPrice}>
-          ${price.toFixed(2)} {itemQuantity > 1 && `(Pack of ${itemQuantity})`}
+          ${price.toFixed(2)} {itemQuantity > 1 && `(${itemQuantity})`}
         </StyledText>
       </StyledView>
     </StyledTouchableOpacity>

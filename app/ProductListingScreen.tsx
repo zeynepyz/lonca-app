@@ -76,7 +76,6 @@ const ProductListingScreen: React.FC = () => {
     <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#121212' : '#f9f9f9' }]}>
       <StatusBar style={isDark ? "light" : "dark"} />
       <StyledView style={styles.content}>
-        <StyledText style={styles.title}>Products</StyledText>
         <FlatList
           data={products}
           keyExtractor={(item) => {
@@ -84,11 +83,17 @@ const ProductListingScreen: React.FC = () => {
             if (typeof item._id === 'string') return item._id;
             return item._id?.$oid || `item-${Math.random()}`;
           }}
-          renderItem={({ item }) => (
-            <ProductCard product={item} onPress={handleProductPress} />
+          renderItem={({ item, index }) => (
+            <View style={{ 
+              marginRight: index % 2 === 0 ? '5%' : 0,
+            }}>
+              <ProductCard product={item} onPress={handleProductPress} />
+            </View>
           )}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ 
+          }}
+          numColumns={2}
         />
       </StyledView>
     </SafeAreaView>

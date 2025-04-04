@@ -16,11 +16,12 @@ export const getThemedStyles = (theme: ThemeType) => {
   return StyleSheet.create({
     container: {
       flex: 1,
-      padding: scaledWidth(16),
       backgroundColor: colors.background,
+      paddingTop: scaledHeight(10),
     },
     content: {
-      padding: scaledWidth(16),
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     row: {
       flexDirection: 'row',
@@ -52,37 +53,40 @@ export const getThemedStyles = (theme: ThemeType) => {
     card: {
       backgroundColor: colors.cardBackground,
       borderRadius: scaledWidth(8),
-      padding: scaledWidth(16),
+      width: scaledWidth(160),
+      height: scaledHeight(257),
       shadowColor: '#000',
       shadowOffset: { width: 0, height: scaledHeight(2) },
       shadowOpacity: 0.1,
       shadowRadius: 4,
       elevation: 2,
       marginBottom: scaledHeight(16),
+      overflow: 'hidden',
     },
     infoContainer: {
-      padding: scaledWidth(16),
+      padding: scaledWidth(8),
+      flex: 1,
+      justifyContent: 'space-between',
     },
     image: {
       width: '100%',
+      height: scaledHeight(160),
+      borderTopLeftRadius: scaledWidth(8),
+      borderTopRightRadius: scaledWidth(8),
     },
     vendorName: {
-      fontSize: scaledFont(16),
-      fontWeight: 'bold',
-      marginBottom: scaledHeight(4),
-      color: colors.text,
+      fontSize: scaledFont(12),
+      color: colors.secondary,
     },
     productName: {
-      fontSize: scaledFont(16),
+      fontSize: scaledFont(14),
       fontWeight: 'bold',
-      marginBottom: scaledHeight(4),
       color: colors.text,
     },
     productPrice: {
-      fontSize: scaledFont(16),
+      fontSize: scaledFont(14),
       fontWeight: 'bold',
-      marginBottom: scaledHeight(4),
-      color: colors.text,
+      color: colors.primary,
     },
     themeToggleButton: {
       position: 'absolute',
