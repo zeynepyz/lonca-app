@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -6,29 +7,91 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import ProductListingScreen from './app/ProductListingScreen';
 import ProductDetailScreen from './app/ProductDetailScreen';
 import { RootStackParamList } from './types/NavigationTypes';
-import { ThemeProvider } from './context/ThemeContext';
+import { ThemeProvider, useTheme, getThemeColors } from './context/ThemeContext';
+import ThemeToggle from './components/ThemeToggle';
+import { productApi } from './services/api';
 
 // Create the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+// Custom header component for theme-aware styling
+const AppNavigator = () => {
+  const { theme } = useTheme();
+  const colors = getThemeColors(theme);
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator 
+        initialRouteName="ProductListing"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.cardBackground,
+          },
+          headerTintColor: colors.text,
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          headerRight: () => <ThemeToggle />,
+        }}
+      >
+        <Stack.Screen 
+          name="ProductListing" 
+          component={ProductListingScreen} 
+          options={{ title: 'Lonca Products' }}
+        />
+        <Stack.Screen 
+          name="ProductDetail" 
+          component={ProductDetailScreen} 
+          options={({ route }) => {
+            const { productId } = route.params as { productId: string };
+            return { 
+              title: '', // Boş başlık ile başla
+              headerTitle: () => <ProductHeaderTitle productId={productId} />
+            };
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+// Ürün başlığını dinamik olarak gösteren bileşen
+const ProductHeaderTitle: React.FC<{ productId: string }> = ({ productId }) => {
+  const [productName, setProductName] = useState<string>('Product Details');
+  const { theme } = useTheme();
+  const colors = getThemeColors(theme);
+  
+  useEffect(() => {
+    const fetchProductName = async () => {
+      try {
+        const product = await productApi.getProductById(productId);
+        if (product && product.names?.en) {
+          setProductName(product.names.en);
+        }
+      } catch (err) {
+        console.error('Error fetching product name:', err);
+      }
+    };
+    
+    fetchProductName();
+  }, [productId]);
+  
+  return (
+    <React.Fragment>
+      {productName && (
+        <Text style={{ color: colors.text, fontWeight: 'bold', fontSize: 16 }}>
+          {productName.length > 25 ? `${productName.substring(0, 22)}...` : productName}
+        </Text>
+      )}
+    </React.Fragment>
+  );
+};
 
 export default function App() {
   return (
     <ThemeProvider>
       <SafeAreaProvider>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="ProductListing">
-            <Stack.Screen 
-              name="ProductListing" 
-              component={ProductListingScreen} 
-              options={{ title: 'Lonca Products' }}
-            />
-            <Stack.Screen 
-              name="ProductDetail" 
-              component={ProductDetailScreen} 
-              options={{ title: 'Product Details' }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <AppNavigator />
       </SafeAreaProvider>
     </ThemeProvider>
   );

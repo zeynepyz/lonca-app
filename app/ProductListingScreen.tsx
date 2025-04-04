@@ -5,7 +5,6 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import ProductCard from '../components/ProductCard';
-import ThemeToggle from '../components/ThemeToggle';
 import { productApi } from '../services/api';
 import { Product } from '../types/ProductTypes';
 import { RootStackParamList } from '../types/NavigationTypes';
@@ -76,7 +75,6 @@ const ProductListingScreen: React.FC = () => {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#121212' : '#f9f9f9' }]}>
       <StatusBar style={isDark ? "light" : "dark"} />
-      <ThemeToggle />
       <StyledView style={styles.content}>
         <StyledText style={styles.title}>Products</StyledText>
         <FlatList

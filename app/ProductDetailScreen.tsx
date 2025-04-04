@@ -7,7 +7,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Product } from '../types/ProductTypes';
 import { RootStackParamList } from '../types/NavigationTypes';
 import { productApi } from '../services/api';
-import ThemeToggle from '../components/ThemeToggle';
 import { 
   StyledView, 
   StyledText, 
@@ -95,7 +94,6 @@ const ProductDetailScreen: React.FC = () => {
   return (
     <StyledScrollView style={[styles.container, { paddingTop: 0 }]}>
       <StatusBar style={isDark ? "light" : "dark"} />
-      <ThemeToggle />
       
       {/* Main Image */}
       <StyledImage
