@@ -10,6 +10,7 @@ import { RootStackParamList } from './types/NavigationTypes';
 import { ThemeProvider, useTheme, getThemeColors } from './context/ThemeContext';
 import ThemeToggle from './components/ThemeToggle';
 import { productApi } from './services/api';
+import AnimatedSplashScreen from './components/SplashScreen';
 
 // Create the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -88,6 +89,16 @@ const ProductHeaderTitle: React.FC<{ productId: string }> = ({ productId }) => {
 };
 
 export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  const onSplashFinish = () => {
+    setAppIsReady(true);
+  };
+
+  if (!appIsReady) {
+    return <AnimatedSplashScreen onFinish={onSplashFinish} />;
+  }
+
   return (
     <ThemeProvider>
       <SafeAreaProvider>
