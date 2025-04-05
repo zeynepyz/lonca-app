@@ -20,17 +20,57 @@ import { useTheme } from '../context/ThemeContext';
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 type ProductDetailNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ProductDetail'>;
 
+// Series option type
+type SeriesOption = {
+  label: string;
+  value: string;
+};
+
 const ProductDetailScreen: React.FC = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>('');
+  const [seriesOptions, setSeriesOptions] = useState<SeriesOption[]>([]);
+  const [selectedSeries, setSelectedSeries] = useState<string>('');
 
   const route = useRoute<ProductDetailRouteProp>();
   const navigation = useNavigation<ProductDetailNavigationProp>();
   const { productId } = route.params;
   const { theme, isDark } = useTheme();
   const styles = getThemedStyles(theme);
+
+  // Parse series name to get options
+  const parseSeriesOptions = (seriesName: string | undefined): SeriesOption[] => {
+    if (!seriesName) return [];
+    
+    // Case 1: Format like "1S-1M-1L"
+    if (seriesName.includes('-')) {
+      return seriesName.split('-').map(item => {
+        // Extract size from format like "1S"
+        const size = item.replace(/[0-9]/g, '').trim();
+        return {
+          label: size.toUpperCase(),
+          value: item.trim()
+        };
+      });
+    }
+    
+    // Case 2: Format like "Standard (1 piece)"
+    const match = seriesName.match(/(.*?)(?:\s*\(|$)/);
+    if (match && match[1]) {
+      return [{
+        label: match[1].trim(),
+        value: seriesName
+      }];
+    }
+    
+    // Default: return whole series name as an option
+    return [{
+      label: seriesName,
+      value: seriesName
+    }];
+  };
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -52,6 +92,13 @@ const ProductDetailScreen: React.FC = () => {
           } else if (data.images && data.images.length > 0) {
             setSelectedImage(data.images[0]);
           }
+          
+          // Parse series options
+          const options = parseSeriesOptions(data.series?.name);
+          setSeriesOptions(options);
+          if (options.length > 0) {
+            setSelectedSeries(options[0].value);
+          }
         } else {
           console.error('Product not found for ID:', productId);
           setError('Product not found');
@@ -66,6 +113,83 @@ const ProductDetailScreen: React.FC = () => {
 
     fetchProduct();
   }, [productId]);
+
+  // Series option selection handler
+  const handleSeriesSelect = (value: string) => {
+    setSelectedSeries(value);
+  };
+
+  // Series Selection Component
+  const SeriesSelector = () => {
+    if (!product?.series?.name || seriesOptions.length === 0) return null;
+    
+    // Custom styles for series selection
+    const selectorStyles = StyleSheet.create({
+      container: {
+        marginVertical: 12,
+      },
+      label: {
+        fontSize: 14,
+        fontWeight: '600',
+        marginBottom: 8,
+        color: isDark ? '#e0e0e0' : '#333',
+      },
+      optionsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+      },
+      optionBox: {
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: isDark ? '#555' : '#ddd',
+        backgroundColor: isDark ? '#333' : '#f8f8f8',
+        minWidth: 48,
+        alignItems: 'center',
+      },
+      selectedOption: {
+        backgroundColor: isDark ? '#532d3c' : '#b87a8a',
+        borderColor: isDark ? '#532d3c' : '#b87a8a',
+      },
+      optionText: {
+        fontSize: 14,
+        color: isDark ? '#e0e0e0' : '#333',
+      },
+      selectedOptionText: {
+        color: '#fff',
+        fontWeight: '600',
+      }
+    });
+    
+    return (
+      <StyledView style={selectorStyles.container}>
+        <StyledText style={selectorStyles.label}>Size</StyledText>
+        <StyledView style={selectorStyles.optionsContainer}>
+          {seriesOptions.map((option, index) => (
+            <StyledTouchableOpacity
+              key={`option-${index}`}
+              style={[
+                selectorStyles.optionBox,
+                selectedSeries === option.value && selectorStyles.selectedOption
+              ]}
+              onPress={() => handleSeriesSelect(option.value)}
+            >
+              <StyledText 
+                style={[
+                  selectorStyles.optionText,
+                  selectedSeries === option.value && selectorStyles.selectedOptionText
+                ]}
+              >
+                {option.label}
+              </StyledText>
+            </StyledTouchableOpacity>
+          ))}
+        </StyledView>
+      </StyledView>
+    );
+  };
 
   if (loading) {
     return (
@@ -132,7 +256,10 @@ const ProductDetailScreen: React.FC = () => {
           <StyledText style={styles.vendorName}>{product.vendor?.name || 'Unknown Vendor'}</StyledText>
           <StyledText style={styles.productName}>{product.names?.en || 'Unnamed Product'}</StyledText>
           <StyledText style={styles.productSku}>SKU: {product.product_code || 'Unknown'}</StyledText>
-          <StyledText style={styles.productSeries}>Series: {product.series?.name || 'N/A'}</StyledText>
+          
+          {/* Series Selector Component */}
+          <SeriesSelector />
+          
           <StyledText style={styles.productPrice}>
             ${(product.price || 0).toFixed(2)} 
             {(product.series?.item_quantity || 0) > 1 && ` (Pack of ${product.series.item_quantity})`}
