@@ -22,6 +22,7 @@ export const getThemedStyles = (theme: ThemeType) => {
     content: {
       justifyContent: 'center',
       alignItems: 'center',
+      marginBottom: scaledHeight(50),
     },
     row: {
       flexDirection: 'row',

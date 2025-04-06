@@ -1,28 +1,100 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Animated } from 'react-native';
 import { Product } from '../types/ProductTypes';
 import { StyledTouchableOpacity, StyledImage, StyledText, StyledView, getThemedStyles } from './styles';
 import { useTheme } from '../context/ThemeContext';
 import { useCurrency } from '../context/CurrencyContext';
 
 interface ProductCardProps {
-  product: Product;
-  onPress: (productId: string) => void;
+  product?: Product;
+  onPress?: (productId: string) => void;
+  isLoading?: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
-  const { theme } = useTheme();
+const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, isLoading = false }) => {
+  const { theme, isDark } = useTheme();
   const { formatPrice } = useCurrency();
   const styles = getThemedStyles(theme);
 
+  // Skeleton animation
+  const [fadeAnim] = React.useState(new Animated.Value(0.3));
+
+  React.useEffect(() => {
+    if (isLoading) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(fadeAnim, {
+            toValue: 0.7,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(fadeAnim, {
+            toValue: 0.3,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    } else {
+      fadeAnim.setValue(1);
+    }
+  }, [isLoading]);
+
+  // Render skeleton loader
+  if (isLoading) {
+    return (
+      <StyledTouchableOpacity
+        style={styles.card}
+        activeOpacity={1}
+      >
+        <Animated.View style={{ 
+          width: '100%', 
+          height: styles.image.height,
+          borderTopLeftRadius: 16, 
+          borderTopRightRadius: 16,
+          backgroundColor: isDark ? '#2a2e3a' : '#e0e0e0',
+          opacity: fadeAnim
+        }} />
+        <StyledView style={styles.infoContainer}>
+          <View>
+            <Animated.View style={{
+              height: 16,
+              width: '80%',
+              backgroundColor: isDark ? '#2a2e3a' : '#e0e0e0',
+              borderRadius: 4,
+              marginBottom: 8,
+              opacity: fadeAnim
+            }} />
+            <Animated.View style={{
+              height: 14,
+              width: '50%',
+              backgroundColor: isDark ? '#2a2e3a' : '#e0e0e0',
+              borderRadius: 4,
+              opacity: fadeAnim
+            }} />
+          </View>
+          <Animated.View style={{
+            height: 18,
+            width: '40%',
+            backgroundColor: isDark ? '#2a2e3a' : '#e0e0e0',
+            borderRadius: 4,
+            marginTop: 8,
+            opacity: fadeAnim
+          }} />
+        </StyledView>
+      </StyledTouchableOpacity>
+    );
+  }
+
+  // Regular card rendering for loaded data
   // Ensure product has valid ID - handle both string and object formats
-  let productId: string;
-  if (typeof product._id === 'string') {
-    productId = product._id;
-  } else if (product._id && product._id.$oid) {
-    productId = product._id.$oid;
-  } else {
-    productId = 'unknown';
+  let productId: string = 'unknown';
+  if (product) {
+    if (typeof product._id === 'string') {
+      productId = product._id;
+    } else if (product._id && product._id.$oid) {
+      productId = product._id.$oid;
+    }
   }
 
   const productName = product?.names?.en || 'Unnamed Product';
@@ -33,7 +105,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
 
   // Handle press event
   const handlePress = () => {
-    onPress(productId);
+    onPress && onPress(productId);
   };
 
   return (

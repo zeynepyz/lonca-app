@@ -5,7 +5,8 @@ import {
   ScrollView, 
   TouchableOpacity, 
   StyleSheet, 
-  ActivityIndicator 
+  ActivityIndicator,
+  Animated 
 } from 'react-native';
 import { productApi, Vendor } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
@@ -21,6 +22,30 @@ const VendorFilter: React.FC<VendorFilterProps> = ({ onVendorSelect, selectedVen
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
   const { theme, isDark } = useTheme();
+  
+  // Skeleton animation
+  const [fadeAnim] = React.useState(new Animated.Value(0.3));
+
+  React.useEffect(() => {
+    if (loading) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(fadeAnim, {
+            toValue: 0.7,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(fadeAnim, {
+            toValue: 0.3,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    } else {
+      fadeAnim.setValue(1);
+    }
+  }, [loading]);
 
   useEffect(() => {
     const fetchVendors = async () => {
@@ -105,17 +130,21 @@ const VendorFilter: React.FC<VendorFilterProps> = ({ onVendorSelect, selectedVen
       fontSize: 12,
       textAlign: 'right',
       marginTop: 5,
+    },
+    skeletonChip: {
+      width: 80,
+      paddingHorizontal: 15,
+      paddingVertical: 8,
+      borderRadius: 20,
+      marginRight: 10,
+      backgroundColor: isDark ? '#2a2e3a' : '#e0e0e0',
     }
   });
 
-
-  return (
-    <StyledView style={styles.container}>
-      <StyledScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterScroll}
-      >
+  // Render skeleton chips
+  const renderSkeletonChips = () => {
+    return (
+      <>
         {/* All option */}
         <StyledTouchableOpacity
           style={[
@@ -134,26 +163,69 @@ const VendorFilter: React.FC<VendorFilterProps> = ({ onVendorSelect, selectedVen
           </StyledText>
         </StyledTouchableOpacity>
         
-        {/* Vendor options */}
-        {vendors.map((vendor, index) => (
-          <StyledTouchableOpacity
-            key={`vendor-${index}`}
+        {/* Skeleton chips */}
+        {Array(5).fill(0).map((_, index) => (
+          <Animated.View
+            key={`skeleton-${index}`}
             style={[
-              styles.filterChip,
-              selectedVendor === vendor.name ? styles.selectedChip : null
+              styles.skeletonChip,
+              { opacity: fadeAnim, width: 60 + Math.random() * 40 }
             ]}
-            onPress={() => onVendorSelect(vendor.name)}
-          >
-            <StyledText 
-              style={[
-                styles.filterText,
-                selectedVendor === vendor.name ? styles.selectedText : null
-              ]}
-            >
-              {vendor.name}
-            </StyledText>
-          </StyledTouchableOpacity>
+          />
         ))}
+      </>
+    );
+  };
+
+  return (
+    <StyledView style={styles.container}>
+      <StyledScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        style={styles.filterScroll}
+      >
+        {loading ? renderSkeletonChips() : (
+          <>
+            {/* All option */}
+            <StyledTouchableOpacity
+              style={[
+                styles.filterChip,
+                selectedVendor === 'all' ? styles.selectedChip : null
+              ]}
+              onPress={() => onVendorSelect('all')}
+            >
+              <StyledText 
+                style={[
+                  styles.filterText,
+                  selectedVendor === 'all' ? styles.selectedText : null
+                ]}
+              >
+                Tümü
+              </StyledText>
+            </StyledTouchableOpacity>
+            
+            {/* Vendor options */}
+            {vendors.map((vendor, index) => (
+              <StyledTouchableOpacity
+                key={`vendor-${index}`}
+                style={[
+                  styles.filterChip,
+                  selectedVendor === vendor.name ? styles.selectedChip : null
+                ]}
+                onPress={() => onVendorSelect(vendor.name)}
+              >
+                <StyledText 
+                  style={[
+                    styles.filterText,
+                    selectedVendor === vendor.name ? styles.selectedText : null
+                  ]}
+                >
+                  {vendor.name}
+                </StyledText>
+              </StyledTouchableOpacity>
+            ))}
+          </>
+        )}
       </StyledScrollView>
       {error && <StyledText style={styles.errorText}>* API bağlantı sorunu, varsayılan veriler gösteriliyor</StyledText>}
     </StyledView>

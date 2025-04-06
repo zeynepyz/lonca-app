@@ -17,6 +17,20 @@ type ProductListingScreenNavigationProp = NativeStackNavigationProp<
   'ProductListing'
 >;
 
+// Type for skeleton items
+interface SkeletonItem {
+  _id: string;
+  skeleton: boolean;
+}
+
+// Union type for list items
+type ListItem = Product | SkeletonItem;
+
+// Type guard to check if item is a skeleton
+const isSkeleton = (item: ListItem): item is SkeletonItem => {
+  return 'skeleton' in item && item.skeleton === true;
+};
+
 const ProductListingScreen: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -86,18 +100,17 @@ const ProductListingScreen: React.FC = () => {
     navigation.navigate('ProductDetail', { productId });
   };
 
-  // Loading state for the main content
-  const renderContent = () => {
-    if (loading) {
-      return (
-        <StyledView style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={styles.productPrice.color} />
-          <StyledText style={styles.loadingText}>Ürünler yükleniyor...</StyledText>
-        </StyledView>
-      );
-    }
+  // Generate placeholder items for skeleton loading
+  const generateSkeletonItems = (): SkeletonItem[] => {
+    return Array(8).fill(0).map((_, index) => ({ 
+      _id: `skeleton-${index}`, 
+      skeleton: true 
+    }));
+  };
 
-    if (error) {
+  // Render content based on loading and error states
+  const renderContent = () => {
+    if (error && !loading && products.length === 0) {
       return (
         <StyledView style={styles.errorContainer}>
           <StyledText style={styles.errorTitle}>Ups!</StyledText>
@@ -106,19 +119,14 @@ const ProductListingScreen: React.FC = () => {
       );
     }
 
-    if (products.length === 0) {
-      return (
-        <StyledView style={styles.errorContainer}>
-          <StyledText style={styles.errorTitle}>Ürün Bulunamadı</StyledText>
-          <StyledText style={styles.errorMessage}>Bu kategoride henüz ürün bulunmuyor.</StyledText>
-        </StyledView>
-      );
-    }
-
+    // Always return a list, with either real data or skeleton loaders
+    const listData: ListItem[] = loading ? generateSkeletonItems() : products;
+    
     return (
       <FlatList
-        data={products}
+        data={listData}
         keyExtractor={(item) => {
+          if (isSkeleton(item)) return item._id;
           // Handle both string and object ID formats
           if (typeof item._id === 'string') return item._id;
           return item._id?.$oid || `item-${Math.random()}`;
@@ -128,7 +136,11 @@ const ProductListingScreen: React.FC = () => {
             marginLeft: index % 2 === 0 ? 0 : '4%',
             marginRight: index % 2 === 0 ? '4%' : 0,
           }}>
-            <ProductCard product={item} onPress={handleProductPress} />
+            {isSkeleton(item) ? (
+              <ProductCard isLoading={true} />
+            ) : (
+              <ProductCard product={item} onPress={handleProductPress} />
+            )}
           </View>
         )}
         showsVerticalScrollIndicator={false}
