@@ -30,12 +30,17 @@ const AppNavigator = () => {
           headerStyle: {
             backgroundColor: colors.cardBackground,
           },
-          headerTintColor: colors.text,
+          headerTintColor: colors.primary,
           headerTitleStyle: {
-            fontWeight: 'bold',
+            fontWeight: '600',
+            fontSize: 18,
+          },
+          headerShadowVisible: false,
+          contentStyle: {
+            backgroundColor: colors.background,
           },
           headerRight: () => (
-            <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
               <CurrencyToggle />
               <ThemeToggle />
             </View>
@@ -45,7 +50,7 @@ const AppNavigator = () => {
         <Stack.Screen 
           name="ProductListing" 
           component={ProductListingScreen} 
-          options={{ title: 'Lonca Products' }}
+          options={{ title: 'Explore Products' }}
         />
         <Stack.Screen 
           name="ProductDetail" 
@@ -87,7 +92,7 @@ const ProductHeaderTitle: React.FC<{ productId: string }> = ({ productId }) => {
   return (
     <React.Fragment>
       {productName && (
-        <Text style={{ color: colors.text, fontWeight: 'bold', fontSize: 16 }}>
+        <Text style={{ color: colors.text, fontWeight: '600', fontSize: 18 }}>
           {productName.length > 25 ? `${productName.substring(0, 22)}...` : productName}
         </Text>
       )}

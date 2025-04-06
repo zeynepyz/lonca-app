@@ -9,29 +9,37 @@ const ThemeToggle: React.FC = () => {
 
   return (
     <TouchableOpacity 
-      style={[styles.button, { backgroundColor: colors.primary }]} 
+      style={[
+        styles.button, 
+        { 
+          backgroundColor: theme === 'dark' ? 'rgba(159, 122, 234, 0.2)' : 'rgba(120, 86, 255, 0.1)',
+          borderWidth: 1,
+          borderColor: colors.primary
+        }
+      ]} 
       onPress={toggleTheme}
     >
-      <StyledText style={styles.icon}>{isDark ? '☀️' : '🌙'}</StyledText>
+      <StyledText style={[styles.icon, { color: colors.primary }]}>
+        {isDark ? '☀️' : '🌙'}
+      </StyledText>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   icon: {
-    fontSize: 20,
+    fontSize: 16,
   }
 });
 

@@ -10,23 +10,23 @@ interface ThemeContextType {
 }
 
 export const lightTheme = {
-  background: '#f9f9f9',
-  text: '#333333',
-  cardBackground: '#ffffff',
-  primary: '#532d3c',
-  secondary: '#6c757d',
-  border: '#e1e1e1',
-  error: '#E53935',
+  background: '#FFFFFF',
+  text: '#1A202C',
+  cardBackground: '#FFFFFF',
+  primary: '#7856FF',
+  secondary: '#718096',
+  border: '#E2E8F0',
+  error: '#E53E3E',
 };
 
 export const darkTheme = {
-  background: '#121212',
-  text: '#f5f5f5',
-  cardBackground: '#1e1e1e',
-  primary: '#b87a8a',
+  background: '#131825',
+  text: '#F7FAFC',
+  cardBackground: '#1E293B',
+  primary: '#9F7AEA',
   secondary: '#A0AEC0',
-  border: '#2d2d2d',
-  error: '#EF5350',
+  border: '#2D3748',
+  error: '#F56565',
 };
 
 export const ThemeContext = createContext<ThemeContextType>({

@@ -88,6 +88,14 @@ const ProductListingScreen: React.FC = () => {
 
   // Loading state for the main content
   const renderContent = () => {
+    if (loading) {
+      return (
+        <StyledView style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={styles.productPrice.color} />
+          <StyledText style={styles.loadingText}>Ürünler yükleniyor...</StyledText>
+        </StyledView>
+      );
+    }
 
     if (error) {
       return (
@@ -117,19 +125,24 @@ const ProductListingScreen: React.FC = () => {
         }}
         renderItem={({ item, index }) => (
           <View style={{ 
-            marginRight: index % 2 === 0 ? '5%' : 0,
+            marginLeft: index % 2 === 0 ? 0 : '4%',
+            marginRight: index % 2 === 0 ? '4%' : 0,
           }}>
             <ProductCard product={item} onPress={handleProductPress} />
           </View>
         )}
         showsVerticalScrollIndicator={false}
         numColumns={2}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+        }}
       />
     );
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#121212' : '#f9f9f9' }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#131825' : '#ffffff' }]}>
       <StatusBar style={isDark ? "light" : "dark"} />
       
       {/* Vendor Filter */}

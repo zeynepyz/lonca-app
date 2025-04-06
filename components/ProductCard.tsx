@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import { Product } from '../types/ProductTypes';
 import { StyledTouchableOpacity, StyledImage, StyledText, StyledView, getThemedStyles } from './styles';
 import { useTheme } from '../context/ThemeContext';
@@ -40,14 +41,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
       style={styles.card}
       onPress={handlePress}
     >
-      <StyledImage
-        source={{ uri: imageUrl }}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      <View style={{ 
+        width: '100%', 
+        height: styles.image.height,
+        borderTopLeftRadius: 16, 
+        borderTopRightRadius: 16,
+        overflow: 'hidden',
+        position: 'relative'
+      }}>
+        <StyledImage
+          source={{ uri: imageUrl }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      </View>
       <StyledView style={styles.infoContainer}>
-        <StyledText style={styles.productName} numberOfLines={2}>{productName}</StyledText>
-        <StyledText style={styles.vendorName} numberOfLines={1}>{vendorName}</StyledText>
+        <View>
+          <StyledText style={styles.productName} numberOfLines={2}>{productName}</StyledText>
+          <StyledText style={styles.vendorName} numberOfLines={1}>{vendorName}</StyledText>
+        </View>
         <StyledText style={styles.productPrice}>
           {formatPrice(price)} {itemQuantity > 1 && `(${itemQuantity})`}
         </StyledText>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, View } from 'react-native';
 import { useTheme, getThemeColors } from '../context/ThemeContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { StyledText } from './styles';
@@ -11,32 +11,38 @@ const CurrencyToggle: React.FC = () => {
 
   return (
     <TouchableOpacity 
-      style={[styles.button, { backgroundColor: colors.primary }]} 
+      style={[
+        styles.button, 
+        { 
+          backgroundColor: theme === 'dark' ? 'rgba(159, 122, 234, 0.2)' : 'rgba(120, 86, 255, 0.1)',
+          borderWidth: 1,
+          borderColor: colors.primary
+        }
+      ]} 
       onPress={toggleCurrency}
     >
-      <StyledText style={styles.text}>{currency === 'USD' ? '$' : '₺'}</StyledText>
+      <StyledText style={[styles.text, { color: colors.primary }]}>
+        {currency === 'USD' ? '$' : '₺'}
+      </StyledText>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
-    marginLeft: 10,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   text: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
   }
 });
 
