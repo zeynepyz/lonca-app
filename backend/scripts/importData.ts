@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import connectDB from '../config/db';
 import Product from '../models/Product';
+import connectDB from '../config/db';
 
 // Load env vars
 dotenv.config();
@@ -11,33 +11,47 @@ dotenv.config();
 // Connect to database
 connectDB();
 
-const importData = async () => {
+// Import data
+const importData = async (): Promise<void> => {
   try {
-    // Path to your JSON file (update this to the actual location)
-    const jsonFilePath = path.join(__dirname, '../../parent_products.json');
+    // İlk olarak parent_products.json dosyasını doğru konumda arıyoruz
+    let filePath = path.resolve(__dirname, '../../parent_products.json');
     
-    // Read JSON file
-    let productsData = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
+    if (!fs.existsSync(filePath)) {
+      // Eğer bulamazsak, dosyayı backend klasöründe arıyoruz
+      filePath = path.resolve(__dirname, '../parent_products.json');
+      
+      if (!fs.existsSync(filePath)) {
+        process.exit(1);
+      }
+    }
     
-    // Convert _id objects to MongoDB ObjectId format
-    productsData = productsData.map((product: any) => {
-      // Convert MongoDB extended JSON format to ObjectId
+    const data = fs.readFileSync(filePath, 'utf8');
+    
+    if (!data) {
+      console.error('Dosya boş veya okunamadı.');
+      process.exit(1);
+    }
+    
+    // Parse data
+    const products = JSON.parse(data); 
+    // Clear existing data
+    await Product.deleteMany({});
+    
+    // Insert new data - converting string IDs to ObjectIds if needed
+    const preparedProducts = products.map((product: any) => {
+      // Convert _id.$oid string to ObjectId if it exists
       if (product._id && product._id.$oid) {
         product._id = new mongoose.Types.ObjectId(product._id.$oid);
       }
       return product;
     });
     
-    // Clear existing data
-    await Product.deleteMany({});
-    
-    // Insert new data
-    const createdProducts = await Product.insertMany(productsData);
-    
-    console.log(`Data Import Success! ${createdProducts.length} products imported.`);
-    process.exit();
+    await Product.insertMany(preparedProducts);
+
+    process.exit(0);
   } catch (error: any) {
-    console.error(`Error: ${error.message}`);
+    console.error(`Hata: ${error.message}`);
     process.exit(1);
   }
 };

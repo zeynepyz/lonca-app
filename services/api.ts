@@ -1,10 +1,7 @@
 import axios from 'axios';
 import { Product } from '../types/ProductTypes';
 
-// Base URL for our API
-// Use your computer's local IP address instead of localhost
-// to allow mobile devices to connect
-const API_URL = 'http://192.168.1.176:5000/api';
+const API_URL = 'http://10.0.2.2:5000/api';
 
 // Create axios instance
 const api = axios.create({
@@ -12,7 +9,14 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // Zaman aşımı süresini artır
+  timeout: 10000,
 });
+
+// Vendor type for the filter
+export interface Vendor {
+  name: string;
+}
 
 // API methods
 export const productApi = {
@@ -20,6 +24,9 @@ export const productApi = {
   getProducts: async (): Promise<Product[]> => {
     try {
       const response = await api.get('/products');
+      
+      if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
+      }
       
       // Ensure every product has valid properties required for rendering
       return response.data.map((product: any, index: number) => {
@@ -40,7 +47,55 @@ export const productApi = {
         return product;
       });
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Ürünler yüklenirken hata:', error);
+      return [];
+    }
+  },
+
+  // Get all vendors
+  getVendors: async (): Promise<Vendor[]> => {
+    try {
+      const response = await api.get('/products/vendors');
+      
+      if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
+      }
+      
+      return response.data;
+    } catch (error) {
+      console.error('Vendorler yüklenirken hata:', error);
+      return [];
+    }
+  },
+
+  // Get products by vendor name
+  getProductsByVendor: async (vendorName: string): Promise<Product[]> => {
+    try {
+      const response = await api.get(`/products/vendor/${vendorName}`);
+      
+      if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
+        return [];
+      }
+      
+      // Ensure every product has valid properties required for rendering
+      return response.data.map((product: any, index: number) => {
+        // Normalize _id field - handle both string and object formats
+        if (!product._id) {
+          console.warn('Product missing _id, adding temporary one:', product);
+          product._id = { $oid: `temp-id-${index}` };
+        } else if (typeof product._id === 'string') {
+          // Convert string _id to $oid format expected by the app
+          const stringId = product._id;
+          product._id = { $oid: stringId };
+        }
+        
+        if (!product.images || !Array.isArray(product.images)) {
+          product.images = [product.main_image || ''];
+        }
+        
+        return product;
+      });
+    } catch (error) {
+      console.error(`${vendorName} için ürünler getirilirken hata:`, error);
       return [];
     }
   },
@@ -50,11 +105,7 @@ export const productApi = {
     try {
       const response = await api.get(`/products/${id}`);
       const product = response.data;
-      
-      if (!product) {
-        console.error('No product returned from API');
-        return null;
-      }
+
       
       // Normalize _id field if it's a string
       if (typeof product._id === 'string') {
@@ -69,7 +120,7 @@ export const productApi = {
       
       return product;
     } catch (error) {
-      console.error(`Error fetching product with ID ${id}:`, error);
+      console.error('Ürün bulunamadı');
       return null;
     }
   }
