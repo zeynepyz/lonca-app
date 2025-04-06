@@ -100,7 +100,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, isLoading =
   const productName = product?.names?.en || 'Unnamed Product';
   const vendorName = product?.vendor?.name || 'Unknown Vendor';
   const price = product?.price || 0;
-  const itemQuantity = product?.series?.item_quantity || 1;
   const imageUrl = product?.main_image || '';
 
   // Handle press event
@@ -133,7 +132,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onPress, isLoading =
           <StyledText style={styles.vendorName} numberOfLines={1}>{vendorName}</StyledText>
         </View>
         <StyledText style={styles.productPrice}>
-          {formatPrice(price)} {itemQuantity > 1 && `(${itemQuantity})`}
+          {formatPrice(price)}
         </StyledText>
       </StyledView>
     </StyledTouchableOpacity>
