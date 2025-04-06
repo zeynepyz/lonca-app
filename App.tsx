@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -8,7 +8,9 @@ import ProductListingScreen from './app/ProductListingScreen';
 import ProductDetailScreen from './app/ProductDetailScreen';
 import { RootStackParamList } from './types/NavigationTypes';
 import { ThemeProvider, useTheme, getThemeColors } from './context/ThemeContext';
+import { CurrencyProvider } from './context/CurrencyContext';
 import ThemeToggle from './components/ThemeToggle';
+import CurrencyToggle from './components/CurrencyToggle';
 import { productApi } from './services/api';
 import AnimatedSplashScreen from './components/SplashScreen';
 
@@ -32,7 +34,12 @@ const AppNavigator = () => {
           headerTitleStyle: {
             fontWeight: 'bold',
           },
-          headerRight: () => <ThemeToggle />,
+          headerRight: () => (
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              <CurrencyToggle />
+              <ThemeToggle />
+            </View>
+          ),
         }}
       >
         <Stack.Screen 
@@ -101,9 +108,11 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <SafeAreaProvider>
-        <AppNavigator />
-      </SafeAreaProvider>
+      <CurrencyProvider>
+        <SafeAreaProvider>
+          <AppNavigator />
+        </SafeAreaProvider>
+      </CurrencyProvider>
     </ThemeProvider>
   );
 }

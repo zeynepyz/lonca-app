@@ -16,6 +16,7 @@ import {
   getThemedStyles
 } from '../components/styles';
 import { useTheme } from '../context/ThemeContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 type ProductDetailRouteProp = RouteProp<RootStackParamList, 'ProductDetail'>;
 type ProductDetailNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ProductDetail'>;
@@ -38,6 +39,7 @@ const ProductDetailScreen: React.FC = () => {
   const navigation = useNavigation<ProductDetailNavigationProp>();
   const { productId } = route.params;
   const { theme, isDark } = useTheme();
+  const { formatPrice } = useCurrency();
   const styles = getThemedStyles(theme);
 
   // Parse series name to get options
@@ -261,7 +263,7 @@ const ProductDetailScreen: React.FC = () => {
           <SeriesSelector />
           
           <StyledText style={styles.productPrice}>
-            ${(product.price || 0).toFixed(2)} 
+            {formatPrice(product.price || 0)}
             {(product.series?.item_quantity || 0) > 1 && ` (Pack of ${product.series.item_quantity})`}
           </StyledText>
         </StyledView>

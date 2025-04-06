@@ -2,6 +2,7 @@ import React from 'react';
 import { Product } from '../types/ProductTypes';
 import { StyledTouchableOpacity, StyledImage, StyledText, StyledView, getThemedStyles } from './styles';
 import { useTheme } from '../context/ThemeContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 interface ProductCardProps {
   product: Product;
@@ -10,6 +11,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
   const { theme } = useTheme();
+  const { formatPrice } = useCurrency();
   const styles = getThemedStyles(theme);
 
   // Ensure product has valid ID - handle both string and object formats
@@ -47,7 +49,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onPress }) => {
         <StyledText style={styles.productName} numberOfLines={2}>{productName}</StyledText>
         <StyledText style={styles.vendorName} numberOfLines={1}>{vendorName}</StyledText>
         <StyledText style={styles.productPrice}>
-          ${price.toFixed(2)} {itemQuantity > 1 && `(${itemQuantity})`}
+          {formatPrice(price)} {itemQuantity > 1 && `(${itemQuantity})`}
         </StyledText>
       </StyledView>
     </StyledTouchableOpacity>
